@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flags</title>
+<meta name="description" content="Flags — accountability, built in.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚩</text></svg>">
+<style>
+  :root {
+    --paper: #F7F6F2;
+    --paper-raised: #FFFFFF;
+    --ink: #1B211D;
+    --muted: #5B645B;
+    --line: #D8DCD6;
+    --accent: #2F6F4E;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #14181A;
+      --paper-raised: #1B211D;
+      --ink: #E9ECE7;
+      --muted: #9AA69B;
+      --line: #2A322C;
+      --accent: #4C9C74;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.6;
+  }
+  .wrap { max-width: 640px; margin: 0 auto; padding: 0 24px; }
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 20px; text-decoration: none; color: var(--ink); }
+  .brand-mark {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: color-mix(in srgb, var(--accent) 16%, transparent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+  }
+  nav a { color: var(--muted); text-decoration: none; margin-left: 20px; font-size: 14px; }
+  nav a:hover { color: var(--accent); }
+  main { padding: 64px 0 40px; }
+  h1 { font-size: 40px; margin: 0 0 8px; letter-spacing: -0.02em; }
+  .tagline { color: var(--muted); font-size: 18px; margin: 0 0 32px; }
+  .card {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 12px;
+  }
+  .card a { color: var(--ink); text-decoration: none; font-weight: 600; display: block; }
+  .card p { color: var(--muted); margin: 4px 0 0; font-size: 14px; }
+  footer { border-top: 1px solid var(--line); padding: 24px 0; color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="brand" href="/"><span class="brand-mark">🚩</span> Flags</a>
+    <nav>
+      <a href="/terms.html">Terms</a>
+      <a href="/privacy.html">Privacy</a>
+      <a href="/guidelines.html">Guidelines</a>
+      <a href="/support.html">Support</a>
+    </nav>
+  </header>
+  <main>
+    <h1>Flags</h1>
+    <p class="tagline">Accountability, built in.</p>
+
+    <div class="card">
+      <a href="/terms.html">Terms of Service</a>
+      <p>What you're agreeing to when you use Flags.</p>
+    </div>
+    <div class="card">
+      <a href="/privacy.html">Privacy Policy</a>
+      <p>What we collect, why, and your choices.</p>
+    </div>
+    <div class="card">
+      <a href="/guidelines.html">Community Guidelines</a>
+      <p>What the flags mean, and what we actually act on.</p>
+    </div>
+    <div class="card">
+      <a href="/support.html">Support</a>
+      <p>Need help or want to report an issue? Start here.</p>
+    </div>
+  </main>
+  <footer>
+    &copy; 2026 Flags. This is a compliance-minimum site — legal and
+    support pages only. A full site (FAQ, real marketing) is planned;
+    see this repo's TODO_MAXIMUM.md.
+  </footer>
+</div>
+</body>
+</html>

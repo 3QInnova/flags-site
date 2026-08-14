@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://flags.3qinnova.com/sitemap.xml
