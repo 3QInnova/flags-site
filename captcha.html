@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify CAPTCHA</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .captcha-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        .captcha-widget {
+            margin: 20px 0;
+        }
+        .status {
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+        }
+        .error {
+            font-size: 14px;
+            color: #d32f2f;
+        }
+    </style>
+</head>
+<body>
+    <div class="captcha-container">
+        <div class="captcha-widget" id="captcha-widget">
+            <div id="cf-turnstile"></div>
+        </div>
+        <div class="status" id="status">Loading CAPTCHA...</div>
+        <div id="fallback" style="display: none; margin-top: 20px; text-align: center;">
+            <button id="simulate-btn" style="padding: 12px 24px; background: #0066cc; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                Simulate CAPTCHA Verification (Test Mode)
+            </button>
+            <p style="font-size: 12px; color: #999; margin-top: 8px;">
+                (Click if Turnstile doesn't load)
+            </p>
+        </div>
+    </div>
+
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <script>
+        window.turnstileReady = false;
+        window.turnstileToken = null;
+        let turnstileInitAttempts = 0;
+        const MAX_TURNSTILE_ATTEMPTS = 50;  // 5 seconds at 100ms intervals
+
+        function setStatusMessage(message, isError = false) {
+            const statusEl = document.getElementById('status');
+            statusEl.textContent = message;
+            if (isError) {
+                statusEl.className = 'status error';
+            } else {
+                statusEl.className = 'status';
+            }
+        }
+
+        function showTestFallback() {
+            document.getElementById('fallback').style.display = 'block';
+            document.getElementById('captcha-widget').style.display = 'none';
+            setStatusMessage('Turnstile unavailable - use test button below', true);
+        }
+
+        function sendTokenToSwift(token) {
+            if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.captchaToken) {
+                window.webkit.messageHandlers.captchaToken.postMessage(token);
+            }
+        }
+
+        function onTurnstileLoad() {
+            window.turnstileReady = true;
+            setStatusMessage('Please complete the CAPTCHA below');
+        }
+
+        function onTurnstileToken(token) {
+            window.turnstileToken = token;
+            setStatusMessage('CAPTCHA verified!');
+            sendTokenToSwift(token);
+        }
+
+        function onTurnstileError() {
+            setStatusMessage('CAPTCHA failed to load. Please try again.', true);
+            showTestFallback();
+        }
+
+        // Set up test button fallback
+        document.addEventListener('DOMContentLoaded', function() {
+            const simulateBtn = document.getElementById('simulate-btn');
+            if (simulateBtn) {
+                simulateBtn.addEventListener('click', function() {
+                    // Generate a fake but plausible Turnstile token for testing
+                    const testToken = 'test-token-' + Math.random().toString(36).substr(2, 20);
+                    setStatusMessage('Test token generated (dev mode)');
+                    setTimeout(() => {
+                        sendTokenToSwift(testToken);
+                    }, 500);
+                });
+            }
+        });
+
+        // Render Turnstile widget when document is ready
+        function initTurnstile() {
+            turnstileInitAttempts++;
+
+            if (window.turnstile) {
+                window.turnstile.render('#cf-turnstile', {
+                    sitekey: '0x4AAAAAAESE492SY72RWgjr',
+                    theme: 'light',
+                    callback: onTurnstileToken,
+                    'error-callback': onTurnstileError,
+                    'expired-callback': function() {
+                        setStatusMessage('CAPTCHA expired. Please try again.', true);
+                    },
+                    'timeout-callback': function() {
+                        setStatusMessage('CAPTCHA request timed out.', true);
+                        showTestFallback();
+                    }
+                });
+                onTurnstileLoad();
+            } else if (turnstileInitAttempts < MAX_TURNSTILE_ATTEMPTS) {
+                // Keep trying to load Turnstile
+                setTimeout(initTurnstile, 100);
+            } else {
+                // Give up on Turnstile and show fallback
+                onTurnstileError();
+            }
+        }
+
+        // Start initialization when page loads
+        window.addEventListener('load', initTurnstile);
+
+        // Also try immediately in case load fires before script runs
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initTurnstile);
+        } else {
+            initTurnstile();
+        }
+    </script>
+</body>
+</html>
